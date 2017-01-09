@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>My Cesium App</title>
+    <script src="Cesium/Cesium.js"></script>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/daterangepicker-bs3.css">
+    <link rel="stylesheet" href="css/bootstrap-toggle.min.css">
+    <link rel="stylesheet" href="css/buttons.css">
+    <link rel="stylesheet" href="css/bootstrap-slider.min.css">
+    <link href="http://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://hovertree.com/texiao/bootstrap/4/css/city-picker.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="css/jquery.webui-popover.min.css">
+    <link title="timeline-styles" rel="stylesheet" href="css/timeline.css">
+    <script src="https://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="cordova.js"></script>
+    <!--<script src="Cesium/viewerCesiumNavigationMixin.js"/>-->
+    <style>
+        @import url(http://10.10.90.6/Cesium/Build/Cesium/Widgets/widgets.css);
+
+        html, body, #cesiumContainer {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .cesium-widget-credits {
+            display: none;
+        }
+
+        .cesium-viewer .cesium-widget-credits {
+            display: none;
+        }
+    </style>
+    <script>
+
+
+    </script>
+
+    <script src="cordova.js"></script>
+</head>
+<body>
+<!--<div>-->
+<!--<button type="submit" id="plus" style="width: 1px;height: 1px">BUTTON</button>-->
+<!--</div>-->
+<!--<div>-->
+<!--<button type="submit" id="minus" style="width: 1px;height: 1px">BUTTON</button>-->
+<!--</div>-->
+<!--<div>-->
+    <!--<button type="submit" id="getPic" style="width: 200px;height: 200px">BUTTON</button>-->
+<!--</div>-->
+<!--<div>-->
+    <!--<button type="submit" id="getPic2">BUTTON</button>-->
+<!--</div>-->
+<div id="cesiumContainer"/>
+<script>
+    var tdtImageProvider = new Cesium.WebMapTileServiceImageryProvider({
+        url: 'http://t4.tianditu.com/img_c/wmts?',
+        layer: 'img',
+        style: 'default',
+        format: 'tiles',
+        tileMatrixSetID: 'c',
+        maximumlevel: 18,
+        alpha: 1.0,
+        show: true,
+        tilingScheme: new Cesium.GeographicTilingScheme(),
+        tileMatrixLabels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18']
+    });
+
+    var tdtProvider1 = new Cesium.WebMapTileServiceImageryProvider({
+        url: 'http://t4.tianditu.com/vec_c/wmts?',
+        layer: 'vec',
+        style: 'default',
+        format: 'tiles',
+        tileMatrixSetID: 'c',
+        maximumlevel: 18,
+        alpha: 1.0,
+        show: true,
+        tilingScheme: new Cesium.GeographicTilingScheme(),
+        tileMatrixLabels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18']
+    });
+
+    var osmProvider = new Cesium.createOpenStreetMapImageryProvider({
+        url: 'https://a.tile.openstreetmap.org/'
+    });
+    var instantProvider = tdtImageProvider;
+    function selectLayers(content) {
+        var temp = content;
+        if (temp == 0) {
+            addAdditionalLayerOption("tianying", tdtImageProvider, 1);
+            var i = getIndex();
+            viewer.imageryLayers.remove(viewer.imageryLayers.get(i -2));
+            console.log("index" + i);
+        } else if (temp == 1) {
+            addAdditionalLayerOption("tianquan", tdtProvider1, 1);
+            var j = getIndex();
+            viewer.imageryLayers.remove(viewer.imageryLayers.get(j -2));
+
+            console.log("index" + j);
+        } else if (temp == 2) {
+            addAdditionalLayerOption("osm", osmProvider, 1);
+            var k = getIndex();
+            viewer.imageryLayers.remove(viewer.imageryLayers.get(k -2));
+            console.log("index" + k);
+
+        }
+    }
+    var index = 0;
+    function getIndex() {
+        index = index + 1;
+        return index;
+    }
+    Cesium.BingMapsApi.defaultKey = '5Vv41lJmAZXWbGIzEOr5~hRdyprq3YjnMm149t4PS5Q~AoyOxzxOxDEMLfugZcp_GC9JDW0nSH-gm4-xYM5erL0lkoMJTAM5hk6UBRoKrSWK';
+
+    var viewer = new Cesium.Viewer('cesiumContainer',
+            {
+                imageryProvider: instantProvider,
+                animation: false,
+                timeline: false,
+                fullscreenButton: false,
+                geocoder: false,
+                selectionIndicator: false,
+                navigationInstructionsInitiallyVisible: false,
+                baseLayerPicker: false,
+                homeButton: false,
+                navigationHelpButton: false,
+                sceneModePicker: false,
+            });
+    var camera = viewer.scene.camera;
+    camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(108.9, 34.267, 20000000)
+    });
+
+    function setLocation(location) {
+        var array = location.split(",");
+        console.log("latitude" + array[0]);
+        console.log("longtitude" + array[1]);
+        camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(array[1], array[0], 200000)
+        });
+    }
+    function backHome(){
+        camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(108.9, 34.267, 20000000)
+        });
+    }
+    //    var geoCoder = viewer.geocoder;
+    //    geoCoder.searchText = "changchun";
+    //    geoCoder.viewModel.search();
+
+    //viewer.extend(Cesium.viewerCesiumNavigationMixin, {});
+
+    /**
+     * plus and minus start
+     *
+     * */
+    //    var canvas = viewer.canvas;
+    //    canvas.setAttribute('tabindex', '0');
+    //    canvas.onclick = function () {
+    //        canvas.focus();
+    //    };
+    //    var ellipsoid = viewer.scene.globe.ellipsoid;
+    //    var flags = {
+    //        looking: false,
+    //        moveForward: false,
+    //        moveBackward: false,
+    //        moveUp: false,
+    //        moveDown: false,
+    //        moveLeft: false,
+    //        moveRight: false
+    //    };
+    //
+    //
+    //    function plus() {
+    //        document.getElementById("plus").click();
+    //    }
+    //
+    //    function minus() {
+    //        document.getElementById("minus").click();
+    //    }
+    //
+    //    function getFlagForKeyCode(buttonType) {
+    //        if (buttonType == "plus") {
+    //            flags['moveForward'] = true;
+    //            return 'moveForward';
+    //        } else if (buttonType == "minus") {
+    //            flags['moveBackward'] = true;
+    //            return 'moveBackward';
+    //
+    //        }
+    //    }
+    //
+    //    var temp = '';
+    //    $(document).ready(function () {
+    //        $("#plus").click(function () {
+    //            getFlagForKeyCode('plus');
+    //            temp = getFlagForKeyCode('plus');
+    //            console.log('temp in :' + temp);
+    //        });
+    //        var success = function (message) {
+    //            return 'moveForward';
+    //        };
+    //        var fail = function (message) {};
+    //    });
+    //
+    //    $(document).ready(function () {
+    //        $("#minus").click(function () {
+    //            temp = getFlagForKeyCode('minus');
+    //            getFlagForKeyCode('minus');
+    //        });
+    //        var success = function (message) {
+    //            return 'moveBackward';
+    //        };
+    //        var fail = function (message) {};
+    //    });
+    //
+    //    document.addEventListener('click', function (e) {
+    //        var flagName = temp;
+    //        console.log('flagName : ', flagName);
+    //        if (typeof flagName !== 'undefined') {
+    //            flags[flagName] = true;
+    //            var camera = viewer.camera;
+    //            var cameraHeight = ellipsoid.cartesianToCartographic(camera.position).height;
+    //            var moveRate = cameraHeight / 100.0;
+    //            if (flags.moveForward)
+    //                camera.moveForward(moveRate * 5);
+    //            if (flags.moveBackward)
+    //                camera.moveBackward(moveRate * 5);
+    //        }
+    //    }, false);
+    /*
+     * plus and minus end
+     *
+     * */
+
+    function compass(content) {
+        console.log(content);
+        var camera = viewer.scene.camera;
+        var position = camera.position;
+        console.log(camera.position);
+
+        camera.flyTo({
+//                destination: Cesium.Cartesian3.fromDegrees(108.9, 34.267, 10000000.34038727246224)
+            destination: position
+        });
+
+//        var geoCoder = viewer.geocoder;
+//        geoCoder.searchText = "changchun";
+//        geoCoder.viewModel.search();
+//        console.log(geoCoder.viewModel.search());
+    }
+
+    var imageryLayers = viewer.imageryLayers;
+    var curWwwPath = "http://10.10.90.6:8089/";
+    var initialurl = curWwwPath + 'GetInitialLayers.ashx';
+    var data = {xmlname: "LayersCollection"};
+    //InitialZhuantiLayers(viewer, initialurl);
+    var layers = new Array();
+    function InitialZhuantiLayers(viewer, initialurl) {
+        $.ajax({
+            url: initialurl,
+            async: true,
+            data: data,
+            success: function (result) {
+                $.each(result.layers, function (index, layer) {
+                    $.each(layer, function (key, value) {
+
+                        var currenturl = curWwwPath + value.urlSource + ".ashx?params={z}/{x}/{reverseY}/";
+                        console.log("-=----"+currenturl);
+                        var region = value.region.split(",");
+                        var rectangle = Cesium.Rectangle.fromDegrees(region[0], region[1], region[2], region[3]);
+                        var currentProvider = new Cesium.UrlTemplateImageryProvider({
+                            url: currenturl,
+                            credit: value.credit,
+                            tilingScheme: new Cesium.WebMercatorTilingScheme({
+                                ellipsoid: Cesium.Ellipsoid.WGS84,
+                                rectangleSouthwestInMeters: new Cesium.Cartesian2(-20037508.34, -20037508.34),
+                                rectangleNortheastInMeters: new Cesium.Cartesian2(20037508.34, 20037508.34)
+                            }),
+                            maximumLevel: value.maxlevel,
+                            rectangle: rectangle
+                        });
+                        layerTemp = addAdditionalLayerOption(value.name, currentProvider, 1);
+                        layerTemp.show = false;
+                        layers.push(layerTemp);
+                    })
+                });
+                selectLayers('-1');
+            },
+            error: function (e) {
+                alert("error:" + e);
+            }
+        });
+    }
+    /**
+     * show and hide
+     * @type {string}
+     */
+
+    Array.prototype.indexOf = function (val) {
+        for (var i = 0; i < this.length; i++) {
+            if (this[i] == val) return i;
+        }
+        return -1;
+    };
+    Array.prototype.remove = function (val) {
+        var index = this.indexOf(val);
+        if (index > -1) {
+            this.splice(index, 1);
+        }
+    };
+
+    var inputLayers = new Array();
+
+
+    var layerid;
+
+    function selectLayer(layerId) {
+        console.log('layerId:' + layerId);
+        layerid = layerId;
+    }
+
+    function seekBar(progress) {
+        //       console.log('lay'+layers[0]);
+        console.log('progress' + progress);
+        layers[layerid].alpha = progress / 100;
+        console.log('alpha' + layers[layerid].alpha);
+    }
+    function showLayer(layerToshow) {
+        layerToshow.show = true;
+    }
+    function hideLayer(layerToshow) {
+        layerToshow.show = false;
+    }
+    function addAdditionalLayerOption(name, imageryProvider, alpha, show) {
+        var layer = imageryLayers.addImageryProvider(imageryProvider);
+        layer.alpha = Cesium.defaultValue(alpha, 1);
+        layer.show = Cesium.defaultValue(show, true);
+        layer.name = name;
+        return layer;
+    }
+    function getPic() {
+        document.getElementById("getPic").click();
+        console.log("aaaaaa");
+    }
+    $(document).ready(function () {
+        $("#getPic").click(function () {
+            initPic();
+        });
+        $("#getPic2").click(function () {
+            selectLayers(1);
+        });
+    });
+    var myMap = new Map();
+    var picId;
+    function getPicId(content){
+        picId = content;
+        console.log("aaaaaa"+picId);
+        initPic();
+    }
+    function initPic() {
+        $.ajax({
+            url: curWwwPath + "GetEveryPicList.ashx",
+            async: true,
+            data: {},
+            success: function (result) {
+                var options = {
+                    hash_bookmark: false,
+                    scale_factor: 0.25,
+                    timenav_height_percentage: 50,
+                    slide_default_fade: "10%",
+                    zoom_sequence: [, 0.01, 0.25, 0.5, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610],
+                    timenav_height_min: 0
+                }
+                var key=picId;
+
+
+                var region = result.events[key].region.split(",");
+                var x = (parseFloat(region[0]) + parseFloat(region[2])) / 2;
+                var y = (parseFloat(region[1]) + parseFloat(region[3])) / 2;
+                camera.flyTo({
+                    destination: Cesium.Cartesian3.fromDegrees(x,y,7000)
+                });
+
+//                if (!myMap.containsKey(key)) {
+                    var provider = new Cesium.UrlTemplateImageryProvider({
+                        url: curWwwPath+"GetEveryPicTile.ashx?params={z}/{x}/{y}/"+key,
+                        credit: key,
+                        tilingScheme: new Cesium.WebMercatorTilingScheme({
+                            ellipsoid: Cesium.Ellipsoid.WGS84,
+                            rectangleSouthwestInMeters: new Cesium.Cartesian2(-20037508.34, -20037508.34),
+                            rectangleNortheastInMeters: new Cesium.Cartesian2(20037508.34, 20037508.34)
+                        }),
+                        maximumLevel: 18,
+                        rectangle: Cesium.Rectangle.fromDegrees(region[0],region[1],region[2],region[3])
+                    });
+                console.log('result' + key);
+                    addAdditionalLayerOption(key, provider, 1);
+//                }
+
+            }
+        });
+    }
+
+
+</script>
+</body>
+</html>
